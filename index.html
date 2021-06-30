@@ -1,0 +1,273 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluglärmkarte Leipzig</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+    integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+    integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+    crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <style>
+      
+        #map {
+            height: 100%
+        }
+        #flight-data-notice {
+            position: absolute;
+            bottom: .5rem;
+            left: .5rem;
+            padding-right: .5rem;
+            padding-top: .5rem;
+            z-index: 1000;
+            background: white;
+        }
+        .legend {
+            padding: .25rem;
+            background: rgba(255, 255, 255, 0.8);
+            line-height: 1.5rem;
+            color: #333;
+        }
+        .legend h4 {
+            text-align: center;
+            font-size: 1rem;
+            margin: .5rem;
+        }
+        .legend span {
+            position: relative;
+            bottom: 3px;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin: 0 8px 0 0;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="flight-data-notice">Flugdaten von 30.11.2020 00:00 Uhr bis 6.12.2020 23:59 Uhr</div>
+    <div id="map"></div>
+   
+
+    <script>
+             
+        var center = [51.35508471392459, 12.390033958977492]
+                
+        const bounds = new L.LatLngBounds(
+            new L.LatLng(51.158857, 11.842693),
+            new L.LatLng(51.558857, 12.742693),
+        );
+
+        const map = L
+                .map('map',{
+                    zoom: 10,
+                    minZoom: 10,
+                    //layers:[1, 2],
+                    maxBounds: bounds,
+                    maxBoundsViscosity: 1,
+
+                })
+                .setView([51.340833, 12.375122]);
+
+        const osmLayer = L. tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 17,
+            minZoom: 9
+        }).addTo(map);
+
+        const noiseColors = {
+            60: '#2c7bb6',
+            65: '#6baad0',
+            70: '#abd9e9',
+            75: '#d5ecd4',
+            80: '#ffffbf',
+            85: '#fed790',
+            90: '#fdae61',
+            95: '#ea633e',
+            100: '#d7191c',
+        };
+
+        //const flight_lines = 'flight_lines.geojson'
+
+       
+
+    
+            const legend = L.control({ position: 'topright' });
+            legend.onAdd = () => {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML += '<h4>Lärmpegel</h4>';
+                Object
+                    .entries(noiseColors)
+                    .forEach(([noise, color]) => {
+                        div.innerHTML += `<i style="background: ${color}"></i><span>${noise - 5}-${noise} dB</span><br>`;
+                    });
+                return div;
+            };
+            legend.addTo(map);
+    /*}
+    */
+        function dataForMap(data){
+            
+            const imgpath_allweek = 'allweek_layer_aus.png'
+            const imgpath_day_layer = 'day_layer_aus.png'
+            const imgpath_night_layer = 'night_layer_aus.png'
+            const imgpath_weekend = 'weekend_layer_aus.png'
+               
+            imageBounds = [
+                [51.158857, 11.842693],
+                [51.558857, 12.742693]
+            ];
+
+
+
+            function styleLines(flightLinesLayer){
+                return{
+                    color: 'red',
+                    opacity:0.1,
+                    weight: 5
+                }
+            }
+
+        
+
+            const flightLinesLayer = L.geoJson(data, {style:styleLines});
+
+
+         
+            
+            const lyr_weekend = L.imageOverlay(imgpath_weekend, imageBounds)
+                .setStyle({
+                opacity: 0.5
+                })
+                .addTo(map);
+
+            const lyr_allweek = L.imageOverlay(imgpath_allweek, imageBounds)
+                .setStyle({
+                opacity: 0.5
+                })
+                
+            const lyr_day = L.imageOverlay(imgpath_day_layer, imageBounds)
+                .setStyle({
+                opacity: 0.5
+            })
+
+            const lyr_night = L.imageOverlay(imgpath_night_layer, imageBounds)
+                .setStyle({
+                opacity: 0.5
+            })
+                
+
+                const objOverlays = {
+                    "weekend":lyr_weekend,
+                    "all week":lyr_allweek,
+                    "day":lyr_day,
+                    "night":lyr_night,
+                    "flightLines":flightLinesLayer
+                };
+                L.control.layers(objOverlays).addTo(map)
+
+        }
+        $.getJSON('flight_lines.geojson', function(data)
+        {
+            dataForMap(data, map);
+         });
+
+   
+       
+
+     
+
+     
+
+     
+
+
+        /*
+
+    const noiseTimeframes = [
+        {
+            label: 'Ganze Woche',
+            geojsonProperty: 'allweek_mean',
+        },
+        {
+            label: 'Wochentags tagsüber',
+            geojsonProperty: 'day_mean',
+        },
+        {
+            label: 'Wochentags nachts',
+            geojsonProperty: 'night_mean',
+        },
+        {
+            label: 'Wochenende ganztagig',
+            geojsonProperty: 'weekend_mean',
+        },
+    ];
+    
+  
+
+    const getNoiseColor = (noise) => {
+        let key = Math.ceil(noise / 5) * 5;
+        key = Math.min(Math.max(60, key), 100);
+        return noiseColors[key];
+    };
+
+    const styleFn = (timeframe) => {
+        return (feature) => {
+            const color = getNoiseColor(feature.properties[timeframe])
+            return {
+                color,
+                weight: 1,
+                opacity: 0.1,
+                fillColor: color,
+                fillOpacity: 0.7,
+            };
+        };
+    }
+
+    const initMap = (data, flightLines) => {
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 17,
+            minZoom: 9
+        });
+
+        const layers = {};
+        noiseTimeframes
+            .forEach(({ label, geojsonProperty }) => {
+                const dataLayer = L.geoJson(data, { style: styleFn(geojsonProperty) });
+                layers[label] = L.layerGroup([osmLayer, dataLayer]);
+            });
+
+        const flightLinesLayer = L.geoJson(flightLines);
+        layers['Fluglinien (Ganze Woche)'] = L.layerGroup([osmLayer, flightLinesLayer]);
+
+        const bounds = new L.LatLngBounds(
+            new L.LatLng(51.158857, 11.842693),
+            new L.LatLng(51.558857, 12.742693),
+        );
+
+        const map = L
+            .map('map', {
+                zoom: 10,
+                minZoom: 10,
+                layers: Object.values(layers)[0],
+                maxBounds: bounds,
+                maxBoundsViscosity: 1,
+            })
+            .setView([51.340833, 12.375122]);
+
+        L.control
+            .layers(layers, {}, {collapsed: false})
+            .addTo(map);
+*/
+    
+
+</script>
+</body>
+</html>
