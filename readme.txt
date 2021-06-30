@@ -1,3 +1,7 @@
+Laermkarte Leipzig
+
+QGIS IDW Interpolation
+
 xamp downloaden und in den Ordner htdocs kopieren
 
 
