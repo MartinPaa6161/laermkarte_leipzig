@@ -1,17 +1,20 @@
-Laermkarte Leipzig
+###### Laermkarte Leipzig
 
-QGIS Inverse Distance Weight Interpolation
-Demo    https://mtnpaa.github.io/laermkarte_leipzig/
+**Demo:**    https://mtnpaa.github.io/laermkarte_leipzig/
 
-Flugdaten von https://stanlytrack3.dfs.de/st3/STANLY_Track3.html
+* Anhand der Flugdaten einer Woche von STANLYTRACK[1].  Wurde die anfänglich im JSON-Format vorliegenden Daten mithilfe QGIS und der Inverse Distance Weight Interpolation (IDW) 
+für eine interaktive Laermkarte von Leipzig genutzt.*
+
+[1] https://stanlytrack3.dfs.de/st3/STANLY_Track3.html
 
 
 
 
 
-Lokale Installation via XAMPP
-Xampp downloaden und in den Ordner htdocs kopieren
 
+** Lokale Installation via XAMPP **
+1. Xampp downloaden und installieren 
+2. Repository in den Ordner xampp/htdocs ablegen
 
 - XAMPP Apache Server starten
 - localhost/laermkarte2.0
