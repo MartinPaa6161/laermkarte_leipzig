@@ -1,7 +1,7 @@
 Laermkarte Leipzig
 
 QGIS Inverse Distance Weight Interpolation
-Demo    https://martinpaa6161.github.io/laermkarte_leipzig/
+Demo    https://mtnpaa.github.io/laermkarte_leipzig/
 
 Flugdaten von https://stanlytrack3.dfs.de/st3/STANLY_Track3.html
 
